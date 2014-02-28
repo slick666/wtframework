@@ -1,8 +1,8 @@
 from six import u
 
 
-contents = u(\
-'''#!/usr/bin/env python
+contents = u(
+    '''#!/usr/bin/env python
 ##########################################################################
 # This file is part of WTFramework. 
 #

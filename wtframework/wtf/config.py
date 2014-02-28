@@ -1,5 +1,5 @@
 ##########################################################################
-# This file is part of WTFramework. 
+# This file is part of WTFramework.
 #
 #    WTFramework is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -25,7 +25,9 @@ import time
 from six import u
 from wtframework.wtf import _wtflog
 
+
 class ConfigReader:
+
     '''
     Config Reader provides a way of reading configuration settings. 
     '''
@@ -48,46 +50,47 @@ class ConfigReader:
 
         # load default yaml file if this is not a unit test.
         try:
-            if _env_var_ != None: 
+            if _env_var_ != None:
                 # We pass in a custom env var for unit testing.
                 configs = re.split(",|;", _env_var_)
                 for config in reversed(configs):
                     self.__load_config_file(config)
             elif not ConfigReader.ENV_VARS in os.environ:
-                _wtflog.warning(u("Config file not specified.  Using config/defaults.yaml"))
+                _wtflog.warning(
+                    u("Config file not specified.  Using config/defaults.yaml"))
                 self.__load_config_file(ConfigReader.DEFAULT_CONFIG_FILE)
             else:
                 # Read and load in all configs specified in reverse order
-                configs = re.split(",|;", str(os.environ[ConfigReader.ENV_VARS]))
+                configs = re.split(
+                    ",|;", str(os.environ[ConfigReader.ENV_VARS]))
                 for config in reversed(configs):
                     self.__load_config_file(config)
 
-                
         except Exception as e:
-            # Fall back to default.yaml file when no config settings are specified.
-            _wtflog.error(u("An error occurred while loading config file: %s"), e)
+            # Fall back to default.yaml file when no config settings are
+            # specified.
+            _wtflog.error(
+                u("An error occurred while loading config file: %s"), e)
             raise e
 
-
-
     class __NoDefaultSpecified__(object):
+
         "No default specified to config reader."
         pass
-
 
     def get(self, key, default_value=__NoDefaultSpecified__):
         '''
         Gets the value from the yaml config based on the key.
-        
+
         No type casting is performed, any type casting should be 
         performed by the caller.
-        
+
         Args:
             key (str) - Config setting key.
-        
+
         Kwargs:
             default_value - Default value to return if config is not specified.
-        
+
         Returns:
             Returns value stored in config file.
 
@@ -110,15 +113,14 @@ class ConfigReader:
                     return temp_var
                 else:
                     value = data_map[key]
-                    return value                
+                    return value
             except (AttributeError, TypeError, KeyError):
                 pass
-            
+
         if default_value == self.__NoDefaultSpecified__:
             raise KeyError(u("Key '{0}' does not exist").format(key))
         else:
             return default_value
-
 
     def __load_config_file(self, file_name):
         try:
@@ -132,19 +134,19 @@ class ConfigReader:
             config_yaml.close()
         except Exception as e:
             _wtflog.error(u("Error loading config file: %s"), file_name)
-            raise ConfigFileReadError(u("Error reading config file ") + file_name, e)
+            raise ConfigFileReadError(
+                u("Error reading config file ") + file_name, e)
 
 
 class ConfigFileReadError(RuntimeError):
+
     """
     Raised when a config file is not found.
     """
     pass
 
 
-
-
-# Create a global constant for referencing this to avoid re-instantiating 
+# Create a global constant for referencing this to avoid re-instantiating
 # this object over and over.
 WTF_CONFIG_READER = ConfigReader()
 """
@@ -158,16 +160,17 @@ Usage::
 
 
 class TimeOutManager(object):
+
     """
     Utility class for getting default config values for various timeout 
     periods.
     """
     _config = None
-    
+
     def __init__(self, config_reader=None):
         """
         Constructor
-        
+
         Args:
             config_reader (ConfigReader) - override default config reader.
         """
@@ -180,7 +183,7 @@ class TimeOutManager(object):
     def BRIEF(self):
         """
         Useful for waiting/pausing for things that should happen near instant.
-        
+
         Returns:
             number - brief wait period.
         """
@@ -196,7 +199,6 @@ class TimeOutManager(object):
             number - short wait period. 
         """
         return self._config.get("timeout.short", 10)
-
 
     @property
     def NORMAL(self):
@@ -231,13 +233,11 @@ class TimeOutManager(object):
         """
         return self._config.get("timeout.epic", 300)
 
-
     def brief_pause(self):
         """
         Do a brief pause.
         """
         time.sleep(self.BRIEF)
-
 
     def short_pause(self):
         """
@@ -245,13 +245,11 @@ class TimeOutManager(object):
         """
         time.sleep(self.SHORT)
 
-
     def normal_pause(self):
         """
         Do a normal pause.
         """
         time.sleep(self.NORMAL)
-
 
     def long_pause(self):
         """
@@ -259,13 +257,11 @@ class TimeOutManager(object):
         """
         time.sleep(self.LONG)
 
-
     def epic_pause(self):
         """
         Do a epic pause.
         """
         time.sleep(self.EPIC)
-
 
 
 WTF_TIMEOUT_MANAGER = TimeOutManager()
